@@ -62,7 +62,7 @@ void IdleEnterTask(void *argument)
 void StopEnterTask(void *argument)
 {
 	uint8_t Stopstr;
-	uint8_t HomeUpdataStr;
+	uint8_t HomeUpdataStr = 1;
 	uint8_t Wrist_Flag=0;
 	while(1)
 	{
@@ -183,5 +183,4 @@ void IdleTimerCallback(void *argument)
 		osMessageQueuePut(Stop_MessageQueue, &Stopstr, 0, 1);
 	}
 }
-
 

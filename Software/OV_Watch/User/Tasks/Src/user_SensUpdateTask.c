@@ -62,7 +62,7 @@ void MPUCheckTask(void *argument)
 						Page_Get_NowPage()->page_obj == &ui_MenuPage ||
 						Page_Get_NowPage()->page_obj == &ui_SetPage )
 					{
-						uint8_t Stopstr;
+						uint8_t Stopstr = 1;
 						osMessageQueuePut(Stop_MessageQueue, &Stopstr, 0, 1);//sleep
 					}
 				}
