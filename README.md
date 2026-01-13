@@ -35,5 +35,48 @@ It currently supports full touch UI interaction, low-power management, and vario
 * **Compiler**: ARMCC / GCC
 * **Simulation**: VSCode (Windows) with LVGL Simulator
 
+## 🧩 Firmware Layout (Bootloader + APP)
+
+Flash layout follows the boot/flag/app split documented in `Firmware/README.md`:
+
+* **Bootloader**: `0x08000000` - `0x08007FFF` (32 KB)
+* **Flag**: `0x08008000` - `0x0800BFFF` (16 KB)
+* **APP**: `0x0800C000` - `0x0807FFFF`
+
+## 🛠️ GCC + CMake (Bootloader)
+
+Bootloader project: `Software/IAP_F411`
+
+Build:
+```bash
+cd Software/IAP_F411
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake
+cmake --build build --parallel
+```
+
+Flash via OpenOCD:
+```bash
+openocd -f openocd.cfg -c "program build/IAP_F411.elf verify reset exit"
+```
+
+Debug with GDB:
+```bash
+openocd -f openocd.cfg
+arm-none-eabi-gdb build/IAP_F411.elf
+```
+In GDB:
+```
+target extended-remote :3333
+monitor reset halt
+load
+monitor reset
+```
+
+Quick script:
+```bash
+chmod +x tools/flash_debug.sh
+tools/flash_debug.sh flash
+```
+
 ---
 *Created by Jerry Wang*
