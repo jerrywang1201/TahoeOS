@@ -194,7 +194,7 @@ void User_Tasks_Init(void)
 
 
 	/* add  others ... */
-	uint8_t HomeUpdataStr;
+	uint8_t HomeUpdataStr = 1;
 	osMessageQueuePut(HomeUpdata_MessageQueue, &HomeUpdataStr, 0, 1);
 
 }
@@ -276,5 +276,4 @@ void WDOGFeedTask(void *argument)
     osDelay(100);
   }
 }
-
 
