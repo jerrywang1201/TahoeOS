@@ -71,6 +71,31 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static uint8_t App_Image_IsValid(uint32_t sp, uint32_t reset)
+{
+  const uint32_t ram_start = 0x20000000;
+  const uint32_t ram_end = 0x20020000;
+  const uint32_t flash_start = APPLICATION_ADDRESS;
+  const uint32_t flash_end = USER_FLASH_END_ADDRESS;
+
+  if (sp < ram_start || sp > ram_end)
+  {
+    return 0;
+  }
+
+  if ((reset & 0x1U) == 0U)
+  {
+    return 0;
+  }
+
+  reset &= ~0x1U;
+  if (reset < flash_start || reset > flash_end)
+  {
+    return 0;
+  }
+
+  return 1;
+}
 
 /* USER CODE END 0 */
 
@@ -177,21 +202,33 @@ int main(void)
     // 检查是否与 "APP FLAG" 相同
     if (strcmp(combined_str, "APP FLAG") == 0)
     {
-        // 如果相同则跳转
-        printf("APP FLAG OK, jump to app\r\n");
-        //user code here
-        SysTick->CTRL = 0X00;//禁止SysTick
-        SysTick->LOAD = 0;
-        SysTick->VAL = 0;
-        __disable_irq();
+        uint32_t app_sp = *(__IO uint32_t*) APPLICATION_ADDRESS;
+        uint32_t app_reset = *(__IO uint32_t*) (APPLICATION_ADDRESS + 4);
 
-        //set JumpAddress
-        JumpAddress = *(__IO uint32_t*) (APPLICATION_ADDRESS + 4);
-        /* Jump to user application */
-        Jump_To_Application = (pFunction) JumpAddress;
-        /* Initialize user application's Stack Pointer */
-        __set_MSP(*(__IO uint32_t*) APPLICATION_ADDRESS);
-        Jump_To_Application();
+        if (App_Image_IsValid(app_sp, app_reset))
+        {
+          // 如果相同则跳转
+          printf("APP FLAG OK, jump to app\r\n");
+          //user code here
+          SysTick->CTRL = 0X00;//禁止SysTick
+          SysTick->LOAD = 0;
+          SysTick->VAL = 0;
+          __disable_irq();
+
+          //set JumpAddress
+          JumpAddress = app_reset;
+          /* Jump to user application */
+          Jump_To_Application = (pFunction) JumpAddress;
+          /* Initialize user application's Stack Pointer */
+          __set_MSP(app_sp);
+          Jump_To_Application();
+        }
+        else
+        {
+          LCD_ShowString(60, LCD_H/2, (uint8_t*)"Bad App!", WHITE, BLACK, 24, 0);
+          LCD_ShowString(32, LCD_H/2+48, (uint8_t*)"Please Download", WHITE, BLACK, 24, 0);
+          HAL_Delay(1000);
+        }
     }
 		// no legal APP 
 		else

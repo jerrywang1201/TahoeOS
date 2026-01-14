@@ -48,6 +48,32 @@ uint8_t tab_1024[1024] =
   };
 uint8_t FileName[FILE_NAME_LENGTH];
 
+static uint8_t App_Image_IsValid(uint32_t sp, uint32_t reset)
+{
+  const uint32_t ram_start = 0x20000000;
+  const uint32_t ram_end = 0x20020000;
+  const uint32_t flash_start = APPLICATION_ADDRESS;
+  const uint32_t flash_end = USER_FLASH_END_ADDRESS;
+
+  if (sp < ram_start || sp > ram_end)
+  {
+    return 0;
+  }
+
+  if ((reset & 0x1U) == 0U)
+  {
+    return 0;
+  }
+
+  reset &= ~0x1U;
+  if (reset < flash_start || reset > flash_end)
+  {
+    return 0;
+  }
+
+  return 1;
+}
+
 /* Private function prototypes -----------------------------------------------*/
 void SerialDownload(void);
 void SerialUpload(void);
@@ -203,19 +229,29 @@ void Main_Menu(void)
     }
     else if (key == 0x33) /* execute the new program */
     {
-      //user code here
-      SysTick->CTRL = 0X00;//禁止SysTick
-      SysTick->LOAD = 0;
-      SysTick->VAL = 0;
-      __disable_irq();
+      uint32_t app_sp = *(__IO uint32_t*) APPLICATION_ADDRESS;
+      uint32_t app_reset = *(__IO uint32_t*) (APPLICATION_ADDRESS + 4);
 
-      //set JumpAddress
-      JumpAddress = *(__IO uint32_t*) (APPLICATION_ADDRESS + 4);
-      /* Jump to user application */
-      Jump_To_Application = (pFunction) JumpAddress;
-      /* Initialize user application's Stack Pointer */
-      __set_MSP(*(__IO uint32_t*) APPLICATION_ADDRESS);
-      Jump_To_Application();
+      if (App_Image_IsValid(app_sp, app_reset))
+      {
+        //user code here
+        SysTick->CTRL = 0X00;//禁止SysTick
+        SysTick->LOAD = 0;
+        SysTick->VAL = 0;
+        __disable_irq();
+
+        //set JumpAddress
+        JumpAddress = app_reset;
+        /* Jump to user application */
+        Jump_To_Application = (pFunction) JumpAddress;
+        /* Initialize user application's Stack Pointer */
+        __set_MSP(app_sp);
+        Jump_To_Application();
+      }
+      else
+      {
+        SerialPutString("Invalid APP image\r\n");
+      }
     }
     else if ((key == 0x34) && (FlashProtection == 1))
     {
