@@ -1,4 +1,4 @@
-# 忽略GUI设置
+# 忽略GUI设置/UI
 *.uvguix.kingham
 
 # 忽略所有位置的 .vscode 目录
