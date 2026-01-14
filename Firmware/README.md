@@ -28,6 +28,20 @@ BootLoader和APP存储的空间大概如下图
 1. 首先使用下载器连接好手表的PCB板子的SWD口；
 2. 打开keil工程编译好, 直接点击`Download`烧录即可；
 3. 当然如果你不想碰代码，直接将`BootLoader_F411.hex`拖到`STM32 ST-LINK Utility`中进行烧录, 也挺方便.
+4. 或者使用 GCC + OpenOCD:
+
+```
+cd ../Software/IAP_F411
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake
+cmake --build build --parallel
+openocd -f openocd.cfg -c "program build/IAP_F411.elf verify reset exit"
+```
+
+一键编译+烧录:
+
+```
+tools/flash_debug.sh build-flash
+```
 
 <p align="center">
 	<img border="1px" width="80%" src="../images/ST-LINK download.jpg">

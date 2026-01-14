@@ -75,6 +75,7 @@ monitor reset
 Quick script:
 ```bash
 chmod +x tools/flash_debug.sh
+tools/flash_debug.sh build-flash
 tools/flash_debug.sh flash
 ```
 
