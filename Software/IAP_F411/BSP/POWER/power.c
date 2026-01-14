@@ -80,7 +80,7 @@ float BatCheck_8times()
 
 uint8_t PowerCalculate()
 {
-	uint8_t power;
+	uint8_t power = 0;
 	float voltage;
 	voltage = BatCheck_8times();
 	
@@ -117,5 +117,4 @@ void Power_Init(void)
 	Power_Pins_Init();
 	Power_Enable();
 }
-
 
