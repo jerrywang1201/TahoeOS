@@ -8,11 +8,13 @@ OPENOCD_CFG="${ROOT_DIR}/openocd.cfg"
 
 usage() {
   cat <<'EOF'
-Usage: tools/flash_debug.sh [flash|gdb|all]
+Usage: tools/flash_debug.sh [build|flash|gdb|all|build-flash]
 
-  flash  - program ELF via OpenOCD and exit
-  gdb    - start OpenOCD and attach GDB (no auto-flash)
-  all    - start OpenOCD, flash, then enter GDB
+  build       - configure (if needed) and build
+  flash       - program ELF via OpenOCD and exit
+  gdb         - start OpenOCD and attach GDB (no auto-flash)
+  all         - start OpenOCD, flash, then enter GDB
+  build-flash - build then flash
 EOF
 }
 
@@ -21,11 +23,12 @@ if [[ $# -ne 1 ]]; then
   exit 1
 fi
 
-if [[ ! -f "${ELF_FILE}" ]]; then
-  echo "ELF not found: ${ELF_FILE}"
-  echo "Build first: cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake && cmake --build build --parallel"
-  exit 1
-fi
+ensure_build() {
+  if [[ ! -f "${BUILD_DIR}/CMakeCache.txt" ]]; then
+    cmake -S "${ROOT_DIR}" -B "${BUILD_DIR}" -DCMAKE_TOOLCHAIN_FILE="${ROOT_DIR}/cmake/arm-none-eabi.cmake"
+  fi
+  cmake --build "${BUILD_DIR}" --parallel
+}
 
 openocd_start() {
   openocd -f "${OPENOCD_CFG}" >"${BUILD_DIR}/openocd.log" 2>&1 &
@@ -47,10 +50,23 @@ openocd_stop() {
 }
 
 case "$1" in
+  build)
+    ensure_build
+    ;;
   flash)
+    if [[ ! -f "${ELF_FILE}" ]]; then
+      echo "ELF not found: ${ELF_FILE}"
+      echo "Build first: ${0##*/} build"
+      exit 1
+    fi
     openocd -f "${OPENOCD_CFG}" -c "program ${ELF_FILE} verify reset exit"
     ;;
   gdb)
+    if [[ ! -f "${ELF_FILE}" ]]; then
+      echo "ELF not found: ${ELF_FILE}"
+      echo "Build first: ${0##*/} build"
+      exit 1
+    fi
     openocd_start
     trap openocd_stop EXIT
     arm-none-eabi-gdb -q "${ELF_FILE}" \
@@ -58,6 +74,11 @@ case "$1" in
       -ex "monitor reset halt"
     ;;
   all)
+    if [[ ! -f "${ELF_FILE}" ]]; then
+      echo "ELF not found: ${ELF_FILE}"
+      echo "Build first: ${0##*/} build"
+      exit 1
+    fi
     openocd_start
     trap openocd_stop EXIT
     arm-none-eabi-gdb -q "${ELF_FILE}" \
@@ -65,6 +86,10 @@ case "$1" in
       -ex "monitor reset halt" \
       -ex "load" \
       -ex "monitor reset"
+    ;;
+  build-flash)
+    ensure_build
+    openocd -f "${OPENOCD_CFG}" -c "program ${ELF_FILE} verify reset exit"
     ;;
   *)
     usage

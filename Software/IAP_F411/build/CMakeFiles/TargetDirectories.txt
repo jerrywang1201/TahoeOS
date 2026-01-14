@@ -1,0 +1,3 @@
+/Users/wangjialong/Desktop/Resouces/Software/OV-Watch/Software/IAP_F411/build/CMakeFiles/IAP_F411.elf.dir
+/Users/wangjialong/Desktop/Resouces/Software/OV-Watch/Software/IAP_F411/build/CMakeFiles/edit_cache.dir
+/Users/wangjialong/Desktop/Resouces/Software/OV-Watch/Software/IAP_F411/build/CMakeFiles/rebuild_cache.dir
