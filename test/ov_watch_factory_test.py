@@ -4,7 +4,10 @@ import argparse
 import sys
 import time
 
-import serial
+try:
+    import serial as _serial
+except Exception as exc:
+    _serial = None
 
 TESTS = [
     "LCD",
@@ -41,9 +44,15 @@ def print_msg(msg, level="INFO"):
 
 
 def open_serial(port, baud, timeout):
+    if _serial is None or not hasattr(_serial, "Serial"):
+        module_path = getattr(_serial, "__file__", "unknown") if _serial else "not found"
+        print_msg("Error: pyserial not available or 'serial' module conflict.", "FAIL")
+        print_msg(f"Detected module: {module_path}", "INFO")
+        print_msg("Install: python3 -m pip install pyserial", "INFO")
+        sys.exit(2)
     try:
-        return serial.Serial(port=port, baudrate=baud, timeout=timeout)
-    except serial.SerialException as exc:
+        return _serial.Serial(port=port, baudrate=baud, timeout=timeout)
+    except _serial.SerialException as exc:
         print_msg(f"Error: Cannot open serial port {port}: {exc}", "FAIL")
         sys.exit(2)
 

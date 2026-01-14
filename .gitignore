@@ -4,3 +4,6 @@
 # 忽略所有位置的 .vscode 目录
 **/.vscode/
 
+# OV-Watch large assets
+/3D Modle/
+/Hardware/
