@@ -1,6 +1,13 @@
-# 忽略GUI设置/UI
+# Ignore hardware and 3D models
+Hardware/
+3D Modle/
+
+# macOS junk
+.DS_Store
+**/.DS_Store
+
 *.uvguix.kingham
 
-# 忽略所有位置的 .vscode 目录
+
 **/.vscode/
 

@@ -1,34 +1,33 @@
 
-
-  <h1 align="center">BootLoader和APP说明</h1>
+  <h1 align="center">BootLoader and Application Notes</h1>
 
 
 
 ## :ledger: Overview
 
-做蓝牙升级下载程序的目的就是, 当你的手表装到外壳中后, 不需要拆开就可以进行蓝牙IAP升级APP了~
+The purpose of the Bluetooth update downloader is to allow Bluetooth IAP upgrades after the watch is assembled in its enclosure, without disassembly.
 
-Fireware文件夹中有`BootLoader_F411.hex`和`APP_OV_Watch_V2.4.0.bin`两个文件, 分别对应工程`Software`文件夹中的`IAP_F411`和`OV_Watch_V2.4.0`这两个工程, 分别都是这两个工程编译好生成的文件.
+The Firmware folder contains two files: `BootLoader_F411.hex` and `APP_OV_Watch_V2.4.0.bin`. They correspond to the `IAP_F411` and `OV_Watch_V2.4.0` projects under the `Software` folder, and are the compiled outputs of those projects.
 
-BootLoader和APP存储的空间大概如下图
+The memory layout of the BootLoader and APP is roughly as shown below:
 
 <p align="center">
 	<img border="1px" width="80%" src="../images/storage.jpg">
 </p>
 
 
-## :warning:如何进入BootLoader的升级模式
+## :warning: How to enter BootLoader upgrade mode
 
-确保手表下载好`BootLoader`后，上电开机时按住KEY1上按键, 记住是先按住KEY1, 然后再按KEY2上电 (或者调试模式时, 是按住KEY1再插下载器上电). 直接上电不按KEY1, 是直接进入APP的.
+After flashing the BootLoader, power on the watch while holding the KEY1 upper button. Sequence matters: hold KEY1 first, then apply power with KEY2 (or in debug mode, hold KEY1 and then plug in the programmer). If you power on without holding KEY1, it will boot directly into the application.
 
 
 
-## :black_nib:如何烧录BootLoader
+## :black_nib: How to flash the BootLoader
 
-1. 首先使用下载器连接好手表的PCB板子的SWD口；
-2. 打开keil工程编译好, 直接点击`Download`烧录即可；
-3. 当然如果你不想碰代码，直接将`BootLoader_F411.hex`拖到`STM32 ST-LINK Utility`中进行烧录, 也挺方便.
-4. 或者使用 GCC + OpenOCD:
+1. Connect the programmer to the watch PCB SWD port.
+2. Build the Keil project and click `Download` to program the device.
+3. If you do not want to modify the code, drag `BootLoader_F411.hex` into `STM32 ST-LINK Utility` to program it.
+4. Alternatively, use GCC + OpenOCD:
 
 ```
 cd ../Software/IAP_F411
@@ -37,7 +36,7 @@ cmake --build build --parallel
 openocd -f openocd.cfg -c "program build/IAP_F411.elf verify reset exit"
 ```
 
-一键编译+烧录:
+One-click build + program:
 
 ```
 tools/flash_debug.sh build-flash
@@ -46,26 +45,26 @@ tools/flash_debug.sh build-flash
 <p align="center">
 	<img border="1px" width="80%" src="../images/ST-LINK download.jpg">
 </p>
-! ! ! 温馨提醒: keil工程里面的设置不知道怎么改最好不要瞎改.
+! ! ! Friendly reminder: if you are unsure how to change the Keil project settings, do not modify them.
 
 
 
-## :black_nib:如何进行APP烧录升级
+## :black_nib: How to flash/upgrade the application
 
-1. 进入BootLoader的升级模式
-1. 用你的电脑找到手表的蓝牙进行配对, 一般来讲蓝牙是叫KT6368A-SPP之类的, 具体的看自己情况嗷, 我这里是叫TD5322A
+1. Enter BootLoader upgrade mode.
+2. Pair your computer with the watch over Bluetooth. The device name is typically something like KT6368A-SPP, depending on the hardware. Mine is TD5322A.
 
 <p align="center">
 	<img border="1px" width="30%" src="../images/蓝牙配对.jpg">
 </p>
 
-2. 然后找到`更多蓝牙设置`, 将配对的蓝牙添加进COM端口
+3. Open `More Bluetooth settings` and add the paired Bluetooth device to a COM port.
 
 <p align="center">
 	<img border="1px" width="80%" src="../images/蓝牙设置.jpg">
 </p>
 
-3. 设置了上面之后, 以后就不用再设置了, 直接打开`SecureCRT`, 并连接到蓝牙对应的端口, 我这里是COM14, 然后开机上电时，按住KEY1进入Boot的升级模式, 然后会出现以下界面, 按照提示进行数字输入即可
+4. After the above setup, you do not need to configure it again. Open `SecureCRT` and connect to the COM port that matches the Bluetooth device (mine is COM14). Then power on and hold KEY1 to enter Boot upgrade mode. You will see the interface below; follow the prompts and enter the numbers.
 
 <p align="center">
 	<img border="1px" width="50%" src="../images/SecureCRT.jpg">
@@ -75,11 +74,11 @@ tools/flash_debug.sh build-flash
 	<img border="1px" width="50%" src="../images/boot升级界面.jpg">
 </p>
 
-4. 进入界面后, 输入`1`即可进行APP文件传输, 此时电脑一直会收到`CCCCCC...`, 此时就是在等待你用Ymodem协议发文件, 选择`send Ymodem`将`APP_OV_Watch_V2.4.0.bin`这个文件传进去即可, 过程比较慢, 耐心等待升级即可.
+5. Once in the interface, enter `1` to start application file transfer. The PC will keep receiving `CCCCCC...`, which means it is waiting for you to send a file via the Ymodem protocol. Choose `send Ymodem` and send `APP_OV_Watch_V2.4.0.bin`. The process is slow; please wait.
 
 <p align="center">
 	<img border="1px" width="50%" src="../images/send ymodem.jpg">
 </p>
 
-5. 最后传输完毕, 输入`3`即可执行APP, 等候开开机~
-5. 以后每当APP有更新后，就算装进外壳了，也可以直接使用蓝牙无线升级啦~~
+6. After the transfer finishes, enter `3` to run the application and wait for it to boot.
+7. After any future application update, you can still upgrade wirelessly via Bluetooth without opening the case.
