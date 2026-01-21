@@ -29,6 +29,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "version.h"
 
 /* USER CODE END Includes */
 
@@ -61,6 +62,30 @@ void MX_FREERTOS_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static void boot_log(const char *msg)
+{
+  printf("[BOOT] %s\r\n", msg);
+}
+
+static void boot_banner(void)
+{
+  printf("\r\n");
+  printf("TahoeOS Boot\r\n");
+  printf("Version: V%d.%d.%d %s\r\n",
+         watch_version_major(),
+         watch_version_minor(),
+         watch_version_patch(),
+         watch_version_info());
+  printf("UID: %08lX%08lX%08lX\r\n",
+         (unsigned long)HAL_GetUIDw0(),
+         (unsigned long)HAL_GetUIDw1(),
+         (unsigned long)HAL_GetUIDw2());
+  printf("SYSCLK=%lu HCLK=%lu PCLK1=%lu PCLK2=%lu\r\n",
+         (unsigned long)HAL_RCC_GetSysClockFreq(),
+         (unsigned long)HAL_RCC_GetHCLKFreq(),
+         (unsigned long)HAL_RCC_GetPCLK1Freq(),
+         (unsigned long)HAL_RCC_GetPCLK2Freq());
+}
 
 /* USER CODE END 0 */
 
@@ -100,14 +125,17 @@ int main(void)
   MX_TIM3_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  boot_banner();
+  boot_log("Peripherals initialized");
   /* USER CODE END 2 */
 
   /* Init scheduler */
   osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
+  boot_log("Kernel initialized");
   MX_FREERTOS_Init();
 
   /* Start scheduler */
+  boot_log("Starting scheduler");
   osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
