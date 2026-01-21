@@ -11,3 +11,5 @@ Hardware/
 
 **/.vscode/
 
+# CMake/build outputs
+**/build/
