@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "user_TasksInit.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -145,10 +146,14 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
+  uint32_t beat = 0;
   /* Infinite loop */
   for(;;)
   {
 		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+    if ((++beat % 2u) == 0u) {
+      printf("[HB] tick=%lu\r\n", (unsigned long)xTaskGetTickCount());
+    }
     osDelay(500);
   }
   /* USER CODE END StartDefaultTask */
@@ -158,4 +163,3 @@ void StartDefaultTask(void *argument)
 /* USER CODE BEGIN Application */
 
 /* USER CODE END Application */
-
