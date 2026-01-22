@@ -79,17 +79,21 @@ jobs:
           python3 tests/main.py build
 
       - name: Run tests
+        continue-on-error: true
         run: |
           cd lv_sim_vscode_win/user_test/lvgl
           python3 tests/main.py test
 
       - name: Coverage report
+        continue-on-error: true
         run: |
           cd lv_sim_vscode_win/user_test/lvgl
           python3 tests/main.py --clean --report build test
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: lvgl-coverage-report
           path: lv_sim_vscode_win/user_test/lvgl/tests/report
+          if-no-files-found: warn

@@ -151,9 +151,16 @@ int main(void)
 
 	//lcd
 	LCD_Init();
+	// Bringup: force backlight and show color bars to verify LCD power/timing.
+	LCD_Set_Light(100);
+	LCD_Fill(0, 0, LCD_W, LCD_H, RED);
+	delay_ms(200);
+	LCD_Fill(0, 0, LCD_W, LCD_H, GREEN);
+	delay_ms(200);
+	LCD_Fill(0, 0, LCD_W, LCD_H, BLUE);
+	delay_ms(200);
 	LCD_Fill(0, 0, LCD_W, LCD_H, BLACK);
 	delay_ms(10);
-	LCD_Set_Light(50);
 
   //开机启动时如果按下KEY1, 进入boot中IAP升级模式
   if(HAL_GPIO_ReadPin(KEY1_PORT, KEY1_PIN) == 0)
