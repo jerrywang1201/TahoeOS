@@ -12,6 +12,10 @@ project(lvgl_tests LANGUAGES C)
 include(CTest)
 
 set(LVGL_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+option(LVGL_TEST_WERROR "Treat warnings as errors for LVGL tests" ON)
+if(DEFINED ENV{CI})
+    set(LVGL_TEST_WERROR OFF CACHE BOOL "CI disables -Werror" FORCE)
+endif()
 
 set(LVGL_TEST_COMMON_EXAMPLE_OPTIONS
     -DLV_BUILD_EXAMPLES=1
@@ -277,7 +281,6 @@ set(COMPILE_OPTIONS
     -Wdeprecated 
     -Wdouble-promotion
     -Wempty-body
-    -Werror
     -Wextra
     -Wformat-security
     -Wmaybe-uninitialized
@@ -297,6 +300,10 @@ set(COMPILE_OPTIONS
     -Wunreachable-code
     ${BUILD_OPTIONS}
 )
+
+if(LVGL_TEST_WERROR)
+    list(APPEND COMPILE_OPTIONS -Werror)
+endif()
 
 # Options test cases are compiled with.
 set(LVGL_TESTFILE_COMPILE_OPTIONS

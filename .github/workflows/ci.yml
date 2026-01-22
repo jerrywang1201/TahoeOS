@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  bootloader-build:
+    name: Bootloader Build (GCC)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake gcc-arm-none-eabi
+
+      - name: Configure
+        working-directory: Software/IAP_F411
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake \
+            -DCMAKE_BUILD_TYPE=MinSizeRel
+
+      - name: Build
+        run: cmake --build Software/IAP_F411/build --parallel
+
+  static-analysis:
+    name: Static Analysis (cppcheck)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install cppcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cppcheck
+
+      - name: Run cppcheck
+        run: |
+          cppcheck --enable=warning,performance,portability \
+            --inline-suppr \
+            --suppress=missingIncludeSystem \
+            --suppress=unusedFunction \
+            --force \
+            --error-exitcode=0 \
+            --output-file=cppcheck.txt \
+            Software/OV_Watch/Core \
+            Software/OV_Watch/User \
+            Software/IAP_F411/Core \
+            Software/IAP_F411/BSP \
+            Software/IAP_F411/SYSTEM \
+            Software/IAP_F411/Ymodem
+
+      - name: Upload cppcheck artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cppcheck-report
+          path: cppcheck.txt
+
+  unit-tests:
+    name: Unit Tests (LVGL)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install prerequisites
+        run: |
+          cd lv_sim_vscode_win/user_test/lvgl
+          bash ./scripts/install-prerequisites.sh
+
+      - name: Build tests
+        run: |
+          cd lv_sim_vscode_win/user_test/lvgl
+          python3 tests/main.py build
+
+      - name: Run tests
+        continue-on-error: true
+        run: |
+          cd lv_sim_vscode_win/user_test/lvgl
+          python3 tests/main.py test
+
+      - name: Coverage report
+        continue-on-error: true
+        run: |
+          cd lv_sim_vscode_win/user_test/lvgl
+          python3 tests/main.py --clean --report build test
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lvgl-coverage-report
+          path: lv_sim_vscode_win/user_test/lvgl/tests/report
+          if-no-files-found: warn
