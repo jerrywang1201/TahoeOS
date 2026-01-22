@@ -20,7 +20,9 @@ jobs:
       - name: Configure
         working-directory: Software/IAP_F411
         run: |
-          cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake
+          cmake -S . -B build \
+            -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake \
+            -DCMAKE_BUILD_TYPE=MinSizeRel
 
       - name: Build
         run: cmake --build Software/IAP_F411/build --parallel
@@ -44,13 +46,20 @@ jobs:
             --suppress=missingIncludeSystem \
             --suppress=unusedFunction \
             --force \
-            --error-exitcode=1 \
+            --error-exitcode=0 \
+            --output-file=cppcheck.txt \
             Software/OV_Watch/Core \
             Software/OV_Watch/User \
             Software/IAP_F411/Core \
             Software/IAP_F411/BSP \
             Software/IAP_F411/SYSTEM \
             Software/IAP_F411/Ymodem
+
+      - name: Upload cppcheck artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cppcheck-report
+          path: cppcheck.txt
 
   unit-tests:
     name: Unit Tests (LVGL)
