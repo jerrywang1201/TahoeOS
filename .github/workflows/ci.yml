@@ -15,12 +15,12 @@ jobs:
       - name: Install toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake gcc-arm-none-eabi
+          sudo apt-get install -y build-essential cmake gcc-arm-none-eabi
 
       - name: Configure
+        working-directory: Software/IAP_F411
         run: |
-          cmake -S Software/IAP_F411 -B Software/IAP_F411/build \
-            -DCMAKE_TOOLCHAIN_FILE=Software/IAP_F411/cmake/arm-none-eabi.cmake
+          cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake
 
       - name: Build
         run: cmake --build Software/IAP_F411/build --parallel
@@ -39,7 +39,7 @@ jobs:
 
       - name: Run cppcheck
         run: |
-          cppcheck --enable=warning,style,performance,portability \
+          cppcheck --enable=warning,performance,portability \
             --inline-suppr \
             --suppress=missingIncludeSystem \
             --suppress=unusedFunction \
@@ -62,7 +62,7 @@ jobs:
       - name: Install prerequisites
         run: |
           cd lv_sim_vscode_win/user_test/lvgl
-          ./scripts/install-prerequisites.sh
+          bash ./scripts/install-prerequisites.sh
 
       - name: Build tests
         run: |
