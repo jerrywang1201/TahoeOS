@@ -146,6 +146,10 @@ void StopEnterTask(void *argument)
 
 			//usart
 			HAL_UART_MspInit(&huart1);
+			if (HAL_UART_Init(&huart1) != HAL_OK)
+			{
+				Error_Handler();
+			}
 			//lcd
 			LCD_Init();
 			LCD_Set_Light(ui_LightSliderValue);
@@ -183,4 +187,3 @@ void IdleTimerCallback(void *argument)
 		osMessageQueuePut(Stop_MessageQueue, &Stopstr, 0, 1);
 	}
 }
-
