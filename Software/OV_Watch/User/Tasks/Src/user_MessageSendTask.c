@@ -44,14 +44,19 @@ struct
 
 /* Private function prototypes -----------------------------------------------*/
 
-void StrCMD_Get(uint8_t * str,uint8_t * cmd)
+void StrCMD_Get(uint8_t * str, uint8_t * cmd)
 {
 	uint8_t i=0;
-  while(str[i]!='=')
+  if (str == NULL || cmd == NULL)
   {
-      cmd[i] = str[i];
-      i++;
+    return;
   }
+  while (str[i] != '\0' && str[i] != '=')
+  {
+    cmd[i] = str[i];
+    i++;
+  }
+  cmd[i] = '\0';
 }
 
 //set time//OV+ST=20230629125555
@@ -134,5 +139,4 @@ void MessageSendTask(void *argument)
 		osDelay(1000);
 	}
 }
-
 
