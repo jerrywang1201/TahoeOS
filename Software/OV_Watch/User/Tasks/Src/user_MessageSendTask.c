@@ -73,8 +73,10 @@ uint8_t TimeFormat_Get(uint8_t * str)
 		RTC_SetDate(TimeSetMessage.nowdate.Year, TimeSetMessage.nowdate.Month,TimeSetMessage.nowdate.Date);
 		RTC_SetTime(TimeSetMessage.nowtime.Hours,TimeSetMessage.nowtime.Minutes,TimeSetMessage.nowtime.Seconds);
 		printf("TIMESETOK\r\n");
+		return 1;
 	}
 
+	return 0;
 }
 
 /**
@@ -134,5 +136,4 @@ void MessageSendTask(void *argument)
 		osDelay(1000);
 	}
 }
-
 
