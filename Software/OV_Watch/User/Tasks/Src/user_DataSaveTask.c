@@ -59,7 +59,9 @@ void DataSaveTask(void *argument)
 			dat[1] = ui_APPSy_EN;
 			SettingSave(dat,0x10,2);
 
+			RTC_TimeTypeDef nowtime;
 			RTC_DateTypeDef nowdate;
+			HAL_RTC_GetTime(&hrtc,&nowtime,RTC_FORMAT_BIN);
 			HAL_RTC_GetDate(&hrtc,&nowdate,RTC_FORMAT_BIN);
 
 			SettingGet(dat,0x20,3);
@@ -86,5 +88,4 @@ void DataSaveTask(void *argument)
 		osDelay(100);
 	}
 }
-
 
