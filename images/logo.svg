@@ -14,5 +14,5 @@
   <rect x="58" y="68" width="84" height="84" rx="18" fill="#0D1117" />
   <circle cx="100" cy="110" r="18" fill="#00C3A5" />
   <text x="196" y="104" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="54" font-weight="700" fill="#F5F7FA">TahoeOS</text>
-  <text x="196" y="146" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="24" font-weight="500" fill="#9CA7B8">OV-Watch Embedded Platform</text>
+  <text x="196" y="146" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="24" font-weight="500" fill="#9CA7B8">Embedded Platform</text>
 </svg>

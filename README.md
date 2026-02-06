@@ -1,4 +1,4 @@
-# TahoeOS (OV-Watch)
+# TahoeOS
 
 <p align="center">
   <img src="images/logo.svg" alt="TahoeOS logo" width="220" />
