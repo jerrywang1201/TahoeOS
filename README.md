@@ -1,7 +1,7 @@
-# TahoeOS (OV-Watch)
+# TahoeOS
 
 <p align="center">
-  <img src="images/logo.svg" alt="TahoeOS logo" width="220" />
+  <img src="images/logo.svg" alt="TahoeOS logo" width="960" />
 </p>
 
 TahoeOS is a Cortex-M4 smartwatch platform built on STM32F411 + FreeRTOS + LVGL.
