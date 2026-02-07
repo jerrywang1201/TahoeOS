@@ -55,7 +55,8 @@ void HardwareInitTask(void *argument)
       Error_Handler();
     }
     // usart start
-    HAL_UART_Receive_DMA(&huart1,(uint8_t*)HardInt_receive_str,25);
+    HardInt_receive_len = 0;
+    HAL_UART_Receive_DMA(&huart1, (uint8_t*)HardInt_receive_str, HARDINT_RX_BUF_SIZE);
     __HAL_UART_ENABLE_IT(&huart1,UART_IT_IDLE);
 
     // PWM Start
@@ -183,5 +184,4 @@ void HardwareInitTask(void *argument)
 		osDelay(500);
 	}
 }
-
 

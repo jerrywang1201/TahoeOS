@@ -42,7 +42,9 @@
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-extern uint8_t HardInt_receive_str[25];
+#define HARDINT_RX_BUF_SIZE 128
+extern uint8_t HardInt_receive_str[HARDINT_RX_BUF_SIZE];
+extern volatile uint16_t HardInt_receive_len;
 extern uint8_t HardInt_uart_flag;
 extern uint8_t HardInt_mpu_flag;
 extern uint8_t HardInt_Charg_flag;

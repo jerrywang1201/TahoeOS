@@ -65,7 +65,8 @@ extern UART_HandleTypeDef huart1;
 extern TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN EV */
-uint8_t HardInt_receive_str[25];
+uint8_t HardInt_receive_str[HARDINT_RX_BUF_SIZE];
+volatile uint16_t HardInt_receive_len = 0;
 uint8_t HardInt_uart_flag=0;
 uint8_t HardInt_mpu_flag=0;
 uint8_t HardInt_Charg_flag=0;
@@ -217,10 +218,16 @@ void USART1_IRQHandler(void)
   /* USER CODE BEGIN USART1_IRQn 0 */
   if(__HAL_UART_GET_FLAG(&huart1,UART_FLAG_IDLE)!=RESET)
   {
+    uint16_t recv_len = HARDINT_RX_BUF_SIZE - __HAL_DMA_GET_COUNTER(huart1.hdmarx);
+    if (recv_len >= HARDINT_RX_BUF_SIZE)
+    {
+      recv_len = HARDINT_RX_BUF_SIZE - 1;
+    }
+    HardInt_receive_len = recv_len;
     HardInt_uart_flag = 1;
     __HAL_UART_CLEAR_FLAG(&huart1,UART_FLAG_IDLE);
     HAL_UART_DMAStop(&huart1);
-    HAL_UART_Receive_DMA(&huart1, HardInt_receive_str, 25);
+    HAL_UART_Receive_DMA(&huart1, HardInt_receive_str, HARDINT_RX_BUF_SIZE);
   }
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
