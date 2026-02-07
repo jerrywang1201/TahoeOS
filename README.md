@@ -74,6 +74,46 @@ openocd -f Software/IAP_F411/openocd.cfg \
 - Low-power behavior (idle dimming + stop mode resume)
 - Bootloader menu + YMODEM firmware delivery
 
+## BLE Control Protocol (v1)
+
+Transport:
+
+- UART/BLE transparent serial, line framed with `\r\n`
+
+Request frame:
+
+- `#<LEN>|<SEQ>|<CMD>|<PAYLOAD>|<CRC16>`
+- `<LEN>`: byte length of `<SEQ>|<CMD>|<PAYLOAD>`
+- `<CRC16>`: CRC16-CCITT (poly `0x1021`, init `0xFFFF`) over `<SEQ>|<CMD>|<PAYLOAD>`
+
+Response frame:
+
+- `#<LEN>|<SEQ>|<ACK>|<CODE>|<PAYLOAD>|<CRC16>`
+- `<ACK>`: `ACK` or `NACK`
+- `<CODE>`:
+  - `0`: OK
+  - `1`: format error
+  - `2`: length error
+  - `3`: CRC error
+  - `4`: unknown command
+  - `5`: bad payload
+
+Commands:
+
+- `GET_STATUS`
+  - payload empty
+  - returns runtime status snapshot (version, battery, charge, BLE, wrist/app flags, timeouts, sensor summary)
+- `SET_CFG`
+  - payload `key=value` list separated by `,` or `;`
+  - supported keys:
+    - `ble=0|1`
+    - `wrist=0|1`
+    - `app=0|1`
+    - `light=0..100`
+    - `ltoff=1..59`
+    - `ttoff=2..60`
+  - constraint: `ltoff < ttoff`
+
 ## Repository Map
 
 - `Software/OV_Watch`: main app firmware
