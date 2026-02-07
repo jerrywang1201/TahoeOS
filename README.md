@@ -1,8 +1,12 @@
-# TahoeOS
+```
+ _____     _                 ___  ____
+|_   _|_ _| |__   ___   ___ / _ \/ ___|
+  | |/ _` | '_ \ / _ \ / _ \ | | \___ \
+  | | (_| | | | | (_) |  __/ |_| |___) |
+  |_|\__,_|_| |_|\___/ \___|\___/|____/
+```
 
-<p align="center">
-  <img src="images/logo.svg" alt="TahoeOS logo" width="960" />
-</p>
+# TahoeOS
 
 TahoeOS is a Cortex-M4 smartwatch platform built on STM32F411 + FreeRTOS + LVGL.
 This repository contains the full bootloader + application workflow, board bring-up assets, and host-side flashing/debug material.
